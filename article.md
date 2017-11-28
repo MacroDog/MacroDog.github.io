@@ -1,6 +1,7 @@
 ---
-layout:page
-title:article
+layout: page
+title: Article
+permalink: /article/
 ---
 ###
 
