@@ -1,6 +1,7 @@
 ---
 layout: post
-title:  shader笔记
+title: shader笔记
+published: true
 ---
 #shader笔记
 
@@ -10,23 +11,23 @@ title:  shader笔记
 ## Unity's Rendering Pipeline
 ###Pass
 ####syntax
->语法
+语法
 `Pass{[Name and Tags] [RenderSetup]}`
 #### Name and tag
->Pass 可以被命名
+Pass 可以被命名
 ` Name "PassName"  ` 
 可以定义任意个Tag
 `Tags { "TagName1" = "Value1" "TagName2" = "Value2" }`
 ####Render state set-up
 #####Cull
->`CullBack|Front|Off`用来设定剔除遮挡
+`CullBack|Front|Off`用来设定剔除遮挡
 #####ZTest
->`ZTesy(Less|Greater|LEqual|GEqual|Equal|NotEqual|Always)`将当前顶点深度值与深度缓存里的值进行比较如果不通过测试则不会执行Pass
+`ZTesy(Less|Greater|LEqual|GEqual|Equal|NotEqual|Always)`将当前顶点深度值与深度缓存里的值进行比较如果不通过测试则不会执行Pass
 #####ZWrite
->` Zwrite On|Off`
+` Zwrite On|Off`
 将当前深度值写入深度缓存当中关闭则不会写入，值得注意的是深度缓存只会存储之前渲染离摄像机最近的顶点深度值。
 #####Offset
- >`Offset OffsetFactor,OffsetUnits`
+`Offset OffsetFactor,OffsetUnits`
  这个函数一般用于当两图形刚上处于同坐标或两个面在同一坐标重叠时。可以通过这个函数让其中一个图形或面的坐标自动偏移。
  ####Blend
 `Blend sourceBlendMode destBlendMode
@@ -36,20 +37,20 @@ BlendOp colorOp, alphaOp
 AlphaToMask On | Off`
 控制颜色混合
 #####ColorMask
->`ColorMask RGB |A |0| any combination of R,G,B,A`
+`ColorMask RGB |A |0| any combination of R,G,B,A`
 设置颜色通道写入遮罩 如果是ColorMask 0 则表示关闭所有颜色通道渲染，默认是写入所有通道(RGBA)
 ####Legacy fixed-funtion shader commands
->Fied-function lighting and Material
+Fied-function lighting and Material
 `Lighting On|Off
 Material {Material Block}
 SeparateSpecual On|Off
 Color Color-value
 ColorMaterial AmbientAndDiffuse|Emission`
->Fixed-function fog
+Fixed-function fog
 `Fog {Fog Block}`
->Fixed-function AlphaTest
+Fixed-function AlphaTest
     `AlphaTest(Less|Greater|LEqual|GEqual|Equal|NotEqual|AlWays)`
->Fixed-function Texture Combiners
+Fixed-function Texture Combiners
 `SetTexture textureProperty{combine options}`
 ##Shader入门
 模板测试：一般GPU会有一块区域用于缓存对应屏幕中点的颜色值。如分辨率1024x768 那么模板缓   存区的单位数也应为1024x768
@@ -103,35 +104,35 @@ _LightColor0 float4类型 当前Pass逐像素光源的颜色
 _WorldSpaceLightPos0 float4类型 xyz表示当前Pass处理的逐像素光源的位置 w如果为0表示平行光
 1则为其它
 ####shader中的默认函数
->_LightMartix0
->>float4x4类型从世界空间到光源空间的变换矩阵。可用于采样cookie和光强衰减(attenuation)纹理处理
+_LightMartix0
+float4x4类型从世界空间到光源空间的变换矩阵。可用于采样cookie和光强衰减(attenuation)纹理处理
 
->unity_4LightPosX<sub>i</sub>,unity_4LightPosY<sub>i</sub>,unity_4LightPosZ<sub>i</sub>,unity_4LightPosW<sub>i</sub>(0<=i<=3)  
->>类型float4  仅Base Pass。前4个非常重要的点光源在世界空间中位置
+unity_4LightPosX<sub>i</sub>,unity_4LightPosY<sub>i</sub>,unity_4LightPosZ<sub>i</sub>,unity_4LightPosW<sub>i</sub>(0<=i<=3)  
+类型float4  仅Base Pass。前4个非常重要的点光源在世界空间中位置
 unity_4LightAtten0 float4类型仅用于BasePass 粗存前四个点光源的衰减因子
 unity_LightColor half[4] 类型 储存类前四个重要点光源的颜色 
 
->float4 WorldSpaceLightDir(float4 v)  
->>输入模型空间中的顶点位置返回世界空间从改点到光源的光照方向
+float4 WorldSpaceLightDir(float4 v)  
+输入模型空间中的顶点位置返回世界空间从改点到光源的光照方向
 
->>float3 UnityWorldSpaceLightDir(float4 v)
+float3 UnityWorldSpaceLightDir(float4 v)
 
->>输入世界空间中的顶点位置返回该点到光源的光照方向
+输入世界空间中的顶点位置返回该点到光源的光照方向
 
->float3 ObjSpaceLightDir(float 4)
->>输入一个模型空间中的顶点位置返回模型空间中从改点到光源的光照方向
+float3 ObjSpaceLightDir(float 4)
+输入一个模型空间中的顶点位置返回模型空间中从改点到光源的光照方向
 
->float3 Shade4PointLights(...) 
->>计算四个点光源的光照。。。
+float3 Shade4PointLights(...) 
+计算四个点光源的光照。。。
 
->float3 lightCoord = mul(_LightMatrix0,float(i.worldPosition,1)).xyz;
->>unity中光照的衰减是使用一张纹理(_LithtTexture0)作为查找表来在片元着色器中计算逐像素衰减。
+float3 lightCoord = mul(_LightMatrix0,float(i.worldPosition,1)).xyz;
+unity中光照的衰减是使用一张纹理(_LithtTexture0)作为查找表来在片元着色器中计算逐像素衰减。
 通过_LightMatrix0将顶点转换到光照空间下 。然后使用坐标的模的平方进行纹理查询 ：
 float3 lightCoord = mul(_LightMatrix0,float(i.worldPosition,1)).xyz;
 float atten = tex2D(_LightTexture0,dot(lightCoord,lightCoord).rr).UNITY_ANNTEN_CHANNEL;
 
->float3 WorldSpaceViewDir(float4 v)
->>输入一个模型空间返回世界坐标系该点到摄像机的观察方向  
+float3 WorldSpaceViewDir(float4 v)
+输入一个模型空间返回世界坐标系该点到摄像机的观察方向  
 
 Unity的阴影
 
