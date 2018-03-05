@@ -164,82 +164,81 @@ Shader "Custom/EdgeDetectNormalsAndDepth" {
 
 
 这种方法也是屏幕后处理所以添加到项目中很简便，但是有很多局限性比如，不能单独修改某一物体的描边大小和颜色，同时对于深度值变化较小的的轮廓就无法检测出来等等 还是要慎用。
-QEQ
-WEWERWEF```
+
 #### Procedural Geometry Silhouette
 这个方法的核心思想就是用过使用两个Pass分别渲染正面和背面，在渲染背面的Pass中讲背面的沿法线(或者其它方向)方扩展一些。这样就可以在渲染正面后就仍然能看到被扩展出来的那一部分。
 
 ```
 Shader "Custom/outline"{
-    Properties{
-    _MainTex("MainTex",2D ) = "white"{}
-    _Color("Color",Color) = (1,1,1,1)
-    _OutlineSize("OutLineSize",Range(0,0.1)) = 0.01
-    _OutlineColor("OutlineColor",Color) = (1,1,1,1)
-    }
-    SubShader{
-      Pass{
-        Tags{"RenderType" = "Opaque" "LightMode"="ForwardBase"}
-        Cull Back
-        CGPROGRAM
-        #pragma vertex vert
-        #pragma fragment frag
-        #pragma multi_compile_fwdbase
-        #include "UnityCG.cginc"
-        sampler2D _MainTex;
-        float4 _Color;
-        struct a2v{
-          float4 vertex : POSITION;
-          float3 normal : NORMAL;
-          float4 texcoord : TEXCOORD0;
-        };
-        struct v2f{
-          float4 pos : SV_POSITION;
-          float2 uv :TEXCOORD0;
-        };
-        v2f vert(a2v v){
-          v2f o;
-          o.pos = UnityObjectToClipPos(v.vertex);
-          o.uv =v.texcoord.xy;
-          return o;
-        }
-        float4 frag(v2f i):SV_Target{
-          float3 albedo = tex2D(_MainTex,i.uv).rgb*_Color;
-          float3 ambient = UNITY_LIGHTMODEL_AMBIENT.rgb * albedo;
-          return ambient;
-        }
-        ENDCG
-      }
-      Pass{
-        NAME "OUTLINE" //用来扩展的Pass放在后面同时开启深度测试可以减少一些性能消耗
-        Tags{"RenderType" = "Qpaque"}
-        Cull Front
-         ZTest Always
-        CGPROGRAM
-        #pragma vertex vert
-        #pragma fragment frag
-        #include "UnityCG.cginc"
-        float4 _OutlineColor;
-        float _OutlineSize;
-        struct v2f{
-          float4 pos : SV_POSITION;
-        };
-        v2f vert(appdata_base v){
-          v2f o ;
-          float4 viewPos = mul(UNITY_MATRIX_MV,v.vertex);
-          float3 viewNormal = mul(v.normal,UNITY_MATRIX_IT_MV).xyz;
-          viewNormal.z = -0.5;
-          viewPos += float4(normalize(viewNormal),0)*_OutlineSize;
-          o.pos = mul(UNITY_MATRIX_P,viewPos);
-          return o;
-        }
-        float4 frag(v2f i) :SV_Target{
-          return float4(_OutlineColor.rgb,1);
-        }
-        ENDCG
-      }
-    }
+  Properties{
+  _MainTex("MainTex",2D ) = "white"{}
+  _Color("Color",Color) = (1,1,1,1)
+  _OutlineSize("OutLineSize",Range(0,0.1)) = 0.01
+  _OutlineColor("OutlineColor",Color) = (1,1,1,1)
   }
+  SubShader{
+    Pass{
+      Tags{"RenderType" = "Opaque" "LightMode"="ForwardBase"}
+      Cull Back
+      CGPROGRAM
+      #pragma vertex vert
+      #pragma fragment frag
+      #pragma multi_compile_fwdbase
+      #include "UnityCG.cginc"
+      sampler2D _MainTex;
+      float4 _Color;
+      struct a2v{
+        float4 vertex : POSITION;
+        float3 normal : NORMAL;
+        float4 texcoord : TEXCOORD0;
+      };
+      struct v2f{
+        float4 pos : SV_POSITION;
+        float2 uv :TEXCOORD0;
+      };
+      v2f vert(a2v v){
+        v2f o;
+        o.pos = UnityObjectToClipPos(v.vertex);
+        o.uv =v.texcoord.xy;
+        return o;
+      }
+      float4 frag(v2f i):SV_Target{
+        float3 albedo = tex2D(_MainTex,i.uv).rgb*_Color;
+        float3 ambient = UNITY_LIGHTMODEL_AMBIENT.rgb * albedo;
+        return ambient;
+      }
+      ENDCG
+    }
+    Pass{
+      NAME "OUTLINE" //用来扩展的Pass放在后面同时开启深度测试可以减少一些性能消耗
+      Tags{"RenderType" = "Qpaque"}
+      Cull Front
+       ZTest Always
+      CGPROGRAM
+      #pragma vertex vert
+      #pragma fragment frag
+      #include "UnityCG.cginc"
+      float4 _OutlineColor;
+      float _OutlineSize;
+      struct v2f{
+        float4 pos : SV_POSITION;
+      };
+      v2f vert(appdata_base v){
+        v2f o ;
+        float4 viewPos = mul(UNITY_MATRIX_MV,v.vertex);
+        float3 viewNormal = mul(v.normal,UNITY_MATRIX_IT_MV).xyz;
+        viewNormal.z = -0.5;
+        viewPos += float4(normalize(viewNormal),0)*_OutlineSize;
+        o.pos = mul(UNITY_MATRIX_P,viewPos);
+        return o;
+      }
+      float4 frag(v2f i) :SV_Target{
+        return float4(_OutlineColor.rgb,1);
+      }
+      ENDCG
+    }
+  }  
+}
 ```
 这种方法好处就是可控，每一个物体都可以随意调控。但是同时也有一些其它问题 比如：使用了两个Pass要注意性能。而且效果其实只是背面的轮廓线并不是真正的描边。
 如果要想到达真正的比较完美的描边，可以考虑从贴图上下手 我想到的是对贴图采样进行Edge Detection 原理其实和之前的对屏幕图像进行修改的Edge Detection shader 一样只不过采样的对象是贴图，然后添加描边效果。这种效果其实就和美术在贴图上进行描边一样。对贴图（美术）有一定要求。
