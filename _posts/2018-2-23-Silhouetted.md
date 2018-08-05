@@ -1,6 +1,11 @@
 ---
 layout: post
-title:  Unity Silhouetted Shader
+title:  "卡通渲染着色器"
+date:   2018-02-23 22:44:02
+categories: MacroDog
+tags: Shader ComputerGraphies Unity3D
+excerpt: 描边这种风格被广泛应用在卡通风格当中。最近也看了很多，记录一下自己的理解。
+mathjax: true
 ---
 ## Unity Silhouetted Shader
   描边这种风格被广泛应用在卡通风格当中。最近也看了很多，记录一下自己的理解。

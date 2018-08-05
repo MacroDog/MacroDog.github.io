@@ -1,12 +1,17 @@
 ---
 layout: post
-title:  shader笔记
+title:  "UnityShader入门精要读书笔记!"
+date:   2017-10-18 22:14:54
+categories: MacroDog
+tags: Unity3D Shader ComputerGraphies
+excerpt: 读书的一些笔记不定期更新
+mathjax: true
 ---
+* content
+{:toc}
 #shader笔记
 
 标签（空格分隔）： 图形渲染
-
-[TOC]
 ## Unity's Rendering Pipeline
 ### Pass
 #### syntax
