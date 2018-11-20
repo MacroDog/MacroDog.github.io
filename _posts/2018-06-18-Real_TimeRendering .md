@@ -143,7 +143,7 @@ Reconstruction
 Box Filter    
 因为非常简易被经常使用在计算机图形学当中。     
 Box Filter 放置在每一个采样点，过滤后的值都取最高的采样点值（采样的图很像柱状图）
-Tent Filter 折线图
+Tent Filter 
 Sinc Filter      
 ReSamlping    
 这一过程是对重建后的连续信号在次采样获得所需的数据。有这一过程的原因是，在计算机中我们是没有办法直接显示出连续信号的。有这一过程我们也可以对型号进行一些操作比如放大(Magnify)和缩小(Minify)。    
@@ -166,6 +166,14 @@ FSAA
 与FSAA相关的另一种方法是Accumulation Buffer，并不是使用更大分辨率缓冲，而是相同分辨率，但更多位颜色。得到2x2采样那么就生成四张图像，每个视角移动x轴或y轴移动半个像素。每个图像生成都在不同的采样点。这些图像被求和在 accumulation buff 中然后加权平均显示在显示器上。Accumulation Buff是OpenGL Api 一部分。可以用来实现动态模糊。代价是在一帧当中渲染多次。
 现代GPU中不一定有accumulation buff,但是可以通过像素混合多个图像来模拟。Accumulation Buff 还有一个有点就是不需要每一个像素网格单元不一定需要一个直角模式，每个pass都是相互独立的，所以可以交替使用 sampling pattern, 例如使用一个旋转的正方形 pattern 如(0, 0.25), {0.5, 0}, {0.75, 0.5}, (0.25, 0.75), 有时称呼这个为 rotated grid supersampling(RGSS), 该方法对于接近于垂直和水平的边沿的反锯齿效果更好。事实上Naiman发现产生锯齿很多时候是在水平和垂直边缘，然后是45度角。     
 supersampling技术带有各自独立生成的shader和，深度和位置信息。代价太高收益太低。也正是这个原因DirectX 并不直接支持supersamlping作为反走样方法。
+SSAA
+SSAA直接将图像映射到缓存中并将其放大。再用超级采样把放大后的图像进行采样，一般选区2个或4个邻近像，把颜色混合起，生成最终的像素，使每个像素
+拥有邻近像素的特征。这样会让图像显得平滑。
+MSAA
+MSAA是一种特殊的超级采样，MSAA概念来自与OpenGL。MSAA只对Z-Buffer和Stencil-Buffer中的数据进行超级采样操作。可以理解位只对多边形的边缘进
+行抗锯齿处理。
+CSAA
+
 
 
 
