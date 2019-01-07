@@ -40,7 +40,7 @@ $$
 点在球坐标系表达方式为
 $$(r,\theta,\phi)$$    
 其中r为球面半径$$\theta$$ 为圆心到点与笛卡尔坐标系中的z轴正方向的夹角，圆心到$$\phi$$是点在xoy平面上的投影点与x轴正方向夹角。
-![]({{site.url}}/image/_post/RealTimeRenderingThried Editor/5_4_1.jpg)
+![Image]({{site.url}}/image/postImage/RealTimeRenderingThriedEditor/5_4_1.jpg)
 对应的转换为:
 
 $$x=rsin\theta \cos\phi$$     
@@ -68,8 +68,9 @@ $$\omega=\iint_{S}\mathrm{d}\omega=\iint_{S}sin\theta\mathrm{d}\theta\mathrm{d}\
 ### 5.5 Shading
 shanding是一种程序结合光源，材质和视角方向使用方程计算输出的辐射亮度。   
 shading方程式一般有两种diffuse和specular。    
-1.Diffuse    
-$$E_L$$是辐射亮度$$c_{diff}$$是diffuse Color
+1.Diffuse
+
+$E_L$是辐射亮度$c_{diff}$是diffuse Color
 
 $$M_{diff}=c_{diff}\otimes E_L \overline\cos\theta_{i}$$    
 
