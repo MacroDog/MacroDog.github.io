@@ -23,7 +23,7 @@ zhihu_username:
 linkedIn_username: 
 dribbble_username:
 
-description_footer: Macro's Blog
+description_footer: MacroDog's Blog
 
 # comments
 # two ways to comment, only choose one, and use your own short name
@@ -35,7 +35,7 @@ disqus_shortname: #gaohaoyang
 # 百度统计 id，将统计代码替换为自己的百度统计id，即
 # hm.src = "//hm.baidu.com/hm.js?xxxxxxxxxxxx";
 # xxxxx字符串
-baidu_tongji_id: 5ba57eb69e6d4606127de7d7acf95d93
+baidu_tongji_id: ##5ba57eb69e6d4606127de7d7acf95d93
 google_analytics_id: #UA-72449510-4 # google 分析追踪id
 
 # Build settings

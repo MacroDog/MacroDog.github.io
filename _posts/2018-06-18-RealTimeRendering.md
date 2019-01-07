@@ -40,7 +40,7 @@ $$
 点在球坐标系表达方式为
 $$(r,\theta,\phi)$$    
 其中r为球面半径$$\theta$$ 为圆心到点与笛卡尔坐标系中的z轴正方向的夹角，圆心到$$\phi$$是点在xoy平面上的投影点与x轴正方向夹角。
-![](/image/_post/Real_Time Rendering Thried Editor/5_4_1.jpg)
+![]({{site.url}}/image/_post/RealTimeRenderingThried Editor/5_4_1.jpg)
 对应的转换为:
 
 $$x=rsin\theta \cos\phi$$     
