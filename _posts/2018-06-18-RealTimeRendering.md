@@ -72,53 +72,55 @@ shading方程式一般有两种diffuse和specular。
 
 $E_L$是辐射亮度$c_{diff}$是diffuse Color
 
-$$M_{diff}=c_{diff}\otimes E_L \overline\cos\theta_{i}$$    
+$$M_{diff}=c_{diff}\otimes E_L \overline{\cos\theta_{i}}$$    
 
 $$L_{diff}=\frac{M_{diff}}{\pi}$$    
 
-$$L_{diff}=\frac{c_{diff}}{\pi}\otimes E_L\overline\cos\theta_{i}$$
+$$L_{diff}=\frac{c_{diff}}{\pi}\otimes E_L\overline{\cos\theta_{i}}$$
 
-2.Specular    
-$$c_{spec}$$镜面反射颜色l为点到光源的方向v为点到观察点的方向
+2.Specular  
+$c_{spec}$镜面反射颜色l为点到光源的方向v为点到观察点的方向  
 
-$$M_{spec}=c_{spec}\otimes E_L\overline\cos\theta_{i}$$
+$$M_{spec}=c_{spec}\otimes E_L\overline{\cos\theta_{i}}$$
 
 $$h=\frac{l+v}{\left|\left|l+v\right|\right|}$$
 
-$$\theta_{h}$$是h与点法线之间的夹角，m是用于控制镜面反射的高光效果，m越大高光区域就越小越亮
+$\theta_{h}$是h与点法线之间的夹角，m是用于控制镜面反射的高光效果，m越大高光区域就越小越亮
 
-$$L_{spec}(v)= \frac{m+8}{8\pi}\overline\cos^m\theta_{h}M_{spec}$$
+$$L_{spec}(v)= \frac{m+8}{8\pi}\overline{\cos^m\theta_{h}}M_{spec}$$
 
-$$L_{spec}(v)= \frac{m+8}{8\pi}\overline\cos^m\theta_{h}c_{spec}\otimes E_L\overline\cos\theta_{i}$$
+$$L_{spec}(v)= \frac{m+8}{8\pi}\overline{\cos^m\theta_{h}}c_{spec}\otimes E_L\overline{\cos\theta_{i}}$$
 
 结合Diffuse和Specular可以得出输出的辐射亮度$$L_o(v)$$
 
-$$L_o(v)=\frac{m+8}{8\pi}\overline\cos^m\theta_{h}c_{spec}\otimes E_L\overline\cos\theta_{i}+\frac{c_{diff}}{\pi}\otimes E_L\overline\cos\theta_{i}$$   
+$$L_o(v)=\frac{m+8}{8\pi}\overline{\cos^m\theta_{h}}c_{spec}\otimes E_L\overline{\cos\theta_{i}}+\frac{c_{diff}}{\pi}\otimes E_L\overline{\cos\theta_{i}}$$   
 
-$$L_o(v)=(\frac{c_{diff}}{\pi}+\frac{m+8}{8\pi}\overline\cos^m\theta_hc_{spec})\otimes E_L\overline\cos\theta_i$$
+$$L_o(v)=(\frac{c_{diff}}{\pi}+\frac{m+8}{8\pi}\overline{\cos^m\theta_h}c_{spec})\otimes E_L\overline{\cos\theta_i}$$
 
 这个函数很像Blinn-Phong模型 如下：
 
-$$L_o(V)=(\overline\cos\theta_ic_{diff}+\overline\cos^m\theta_hc_{spec})\otimes B_L$$
+$$L_o(V)=(\overline{\cos\theta_i}c_{diff}+\overline{\cos^m\theta_h}c_{spec})\otimes B_L$$
 
 这里要注意的是在blinn—phong模型中$B_L$并不等于$E_L$。因为blinn-Phone模型中并不是物理光照模型。
 
 #### 5.5.1 Implementing the shading Equation
 因为实际应用当中光线一般并不是单个光源，大部分时候还是多个光源与场景交互所以需要对结果进行一次求和。
 
-$$L_o(v)=\sum_{k=1}^n((\frac{c_{diff}}{\pi}+\frac{m+8}{8\pi}\overline\cos^m\theta_{h_k}c_{spec})\otimes E_{L_k}\overline\cos\theta_{i_k})$$
+$$L_o(v)=\sum_{k=1}^n((\frac{c_{diff}}{\pi}+\frac{m+8}{8\pi}\overline{\cos^m\theta_{h_k}}c_{spec})\otimes E_{L_k}\overline{\cos\theta_{i_k}})$$
 
 由于光源很多所以可以利用shader的dynamic branching capabilities去遍历光源。    
 在设计shading的实现的时候，这些计算需要通过计算的频率(frequency of evaluation)被分为不同的级别。最低的等级为每个模型(per-model),这个级别当中每个3D模型将会被计算(evaluation)一次在application阶段，并将结果传递到graphics API。其次每片源(per-primitive)计算一次在geometry shader当中，计算的结果将会全部被pixels使用在primitive中。然后是每顶点(pre-vertex)在定点着色器上被计算一次，结果将被线性插值传入pixel shader中。最后，就是每像素(per-pixel)在pixel shader当中计算。
 所以可以将之前算法中的per-modle分离出来。
-
-$$L_o(v)=\sum_{k=1}^n((K_d+K_s\overline\cos^m\theta_{h_k}c_{spec})\otimes E_{L_k}\overline\cos\theta_{i_k})$$
+   
+$$
+L_o(v)=\sum_{k=1}^n((K_d+K_s\overline{\cos^m\theta_{h_k}}c_{spec})\otimes E_{L_k}\overline{\cos\theta_{i_k}})
+$$   
 
 $$K_d = \frac{c_{diff}}{\pi}$$
 
 $$ K_s=\frac{8+m}{8\pi}$$
 
-&k_s& &k_d&都是在application阶段被计算好的可以直接使用API直接访问 ，$\overline\cos\theta_{i_k}$可以通过$l_k\cdot n$获得,同理$\overline\cos\theta_{h_k}$也可以通过$h_k\cdot n$获得视角向量v 也可以通过顶点P和观察者$P_v$位置得到
+&k_s& &k_d&都是在application阶段被计算好的可以直接使用API直接访问 ，$\overline{\cos\theta_{i_k}}$可以通过$l_k\cdot n$获得,同理$\overline{\cos\theta_{h_k}}$也可以通过$h_k\cdot n$获得视角向量v 也可以通过顶点P和观察者$P_v$位置得到
 
 $$v=\frac{P_v-P}{\left|\left|P_v+P\right|\right|}$$
 
