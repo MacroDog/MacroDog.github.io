@@ -104,3 +104,54 @@ $$
 $$
 \mathscr{F}[f^{(n)}(x)] = (iw)^{(n)}F(w)
 $$
+# 快速傅里叶变换（FFT）   
+FFT是离散傅氏变换（DFT）的快速算法
+在理解FFT之前先理解以一种函数表达方法：在DFT中对于有限序列$x\epsilon\left\{ X_{n} \right\}^{N-1}_{n=0}$有$X[k] = \sum^{N-1}_{n=0}xe^{-i2\pi kn/N}$ 如果全部求和的话算法的复杂度就是$O(n^2)$   
+$$
+e^{-ix} =\cos x-i\sin x$$
+$$
+X[k] = \sum^{N-1}_{n=0}x_ne^{-i2\pi kn/N}
+$$
+$$
+X[k]  = \sum_{n=0}^{N-1}x_n\cos{\frac{2\pi kn}{N}}-i\sum_{n=0}^{N-1}x_n\sin{\frac{2\pi kn}{N}}
+$$
+$$
+X[k]= \sum_{n=0 偶数}^{N-1}x_ne^{-2i\pi kn/N}+ \sum_{n=1 奇数}^{N-1}x_ne^{-2i\pi kn/N}
+$$
+$$
+X[k]= \sum_{r=0}^{\frac{N}{2}-1}x_{(2r)}e^{-2i\pi k2r/N}+ \sum_{r=0}^{\frac{N}{2}-1}x_{(2r+1)}e^{-2i\pi k(2r+1)/N}
+$$
+根据$e^{-i2\pi kn/N}$周期性
+$$
+e^{-i2\pi kn/N}=e^{-i2\pi (k+N)n/N}=e^{-i2\pi k(n+N)/N}
+$$
+可以得出
+$$
+X[k]= \sum_{r=0}^{\frac{N}{2}-1}x_{(r)}e^{-2i\pi kr/\frac{N}{2}}+ e^{\frac{-2i\pi k}{N}}\sum_{r=0}^{\frac{N}{2}-1}x_{r}e^{-2i\pi kr/\frac{N}{2}}
+$$
+$$
+X[k]= X_0(k)+ e^{\frac{-2i\pi k}{N}}X_1(k)
+$$
+但是你可能注意到此时k值的取值范围变为了0到$\frac{N}{2}-1$
+根据$e^{-i2\pi k(n+N/2)/N}=-e^{-i2\pi kn/N}$和可以将$X_0(k+N/2) = \sum_{r=0}^{\frac{N}{2}-1}x_{(r)}e^{-2i\pi r(k+N/2)/\frac{N}{2}}=\sum_{r=0}^{\frac{N}{2}-1}x_{(r)}e^{-2i\pi kr/\frac{N}{2}}$而$X_1(k)=e^{-i2\pi (k+N/2)/N} \sum_{r=0}^{\frac{N}{2}-1}x_{(r)}e^{-2i\pi r(k+N/2)/\frac{N}{2}}=-e^{-i2\pi k/N} \sum_{r=0}^{\frac{N}{2}-1}x_{(k+N/2)}e^{-2i\pi rk/\frac{N}{2}}$
+得到
+$$
+\left\{
+\begin{gathered}
+X[k]= X_0(k)+ e^{\frac{-2i\pi k}{N}}X_1(k) \\
+X[k]= X_0(k)- e^{\frac{-2i\pi k}{N}}X_1(k)
+\end{gathered}
+\right.
+$$
+其中$e^{\frac{-2i\pi k}{N}}$就是蝶形变换中的 $W_N^{k}$得出的结果可以继续进行蝶形变换
+
+$$
+\left\{
+\begin{gathered}
+X[k]= X_0(k)+ W_N^kX_1(k) \\
+X[k]= X_0(k)-W_N^kX_1(k)
+\end{gathered}
+\right.
+$$
+为了方便代码实现我们将实部和虚部分开
+
