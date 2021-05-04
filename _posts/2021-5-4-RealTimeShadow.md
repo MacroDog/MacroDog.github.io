@@ -19,4 +19,7 @@ Fragment中像素点z在透视投影中是经过投影变换过。在对比中�
 #### Issues In Shadow Mapping
 self occlusion
 由于记录深度是记录的深度纹理是离散的导致在从视角渲染的时候fragment中获得深度不准确
-![tu1]()
+![tu1](https://github.com/MacroDog/MacroDog.github.io/blob/master/image/postImage/Game202/1620111577.jpg)
+解决方案：
+增加容错值
+生成深度纹理的时候不仅保存最小深度还有第二深度，比较的时候使用中间深度比较
